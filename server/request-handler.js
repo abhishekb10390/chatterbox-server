@@ -48,8 +48,10 @@ var requestHandler = function(request, response) {
     var headers = defaultCorsHeaders;
     headers['Content-Type'] = 'application/json';
     response.writeHead(200, headers);
+    //console.log(typeof messages)
     var theMessages = JSON.stringify(messages);
     //console.log(theMessages)
+    //console.log(JSON.parse(theMessages));
     response.end(theMessages);
 
   } else if(request.method === 'POST') {
@@ -65,10 +67,11 @@ var requestHandler = function(request, response) {
     });
 
     request.on('end', function () {
-      console.log(chunk);
-      messages.results.push(chunk);
+
+      console.log(JSON.parse(chunk));
+      messages.results.push(JSON.parse(chunk));
       //console.log("Body: " + messages);
-      response.end(JSON.stringify(messages));
+      response.end('success');
     });
 
     //request.end('post received');

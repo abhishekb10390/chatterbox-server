@@ -101,7 +101,7 @@ describe('Node Server Request Listener Function', function() {
     expect(res._ended).to.equal(true);
   });
 
-
+// [{username: juno, message: dkajfk} ]
   it('Should 404 when asked for a nonexistent file', function() {
     var req = new stubs.request('/arglebargle', 'GET');
     var res = new stubs.response();
