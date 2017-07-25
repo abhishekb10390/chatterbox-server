@@ -15,6 +15,7 @@ var url = require('url');
 //var chatterBoxClient = http.createClient(3000, '///Users/student/Desktop/hrsf80-chatterbox-server/client/hrsf80-chatterbox-client-solution/client/index.html')
 var messages = {};
 messages.results = [];
+
 var requestHandler = function(request, response) {
 
 
@@ -47,16 +48,20 @@ var requestHandler = function(request, response) {
     headers['Content-Type'] = 'application/json';
     response.writeHead(200, headers);
     response.end(JSON.stringify(messages));
-  }
-
-  if(request.method === 'POST') {
+  } else if(request.method === 'POST') {
     var body = '';
+    var headers = defaultCorsHeaders;
     response.writeHead(201, headers);
     request.on('data', function (data) {
       body += data ;
       messages.results.push(JSON.parse(data.json));
     });
-    response.end();
+    response.end(JSON.stringify(messages));
+  } else {
+    var headers = defaultCorsHeaders;
+    headers['Content-Type'] = 'application/json';
+    response.writeHead(404, headers);
+    response.end("Not found");
   }
 
     //request.on('end', function(){
