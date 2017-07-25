@@ -18,7 +18,7 @@ messages.results = [];
 
 var requestHandler = function(request, response) {
 
-
+  //console.log('this is the url ' + request.url);
 
   // Request and Response come from node's http module.
   //
@@ -28,35 +28,59 @@ var requestHandler = function(request, response) {
   //
   // Documentation for both request and response can be found in the HTTP section at
   // http://nodejs.org/documentation/api/
-  console.log(request.url);
+  //console.log(request.url);
   // Do some basic logging.
   //
   var uri = url.parse(request.url).pathname;
   // Adding more logging to your server can be an easy way to get passive
   // debugging help, but you should always be careful about leaving stray
   // console.logs in your code.
-  console.log('Serving request type ' + request.method + ' for url ' + request.url);
+  //console.log('Serving request type ' + request.method + ' for url ' + uri);
 
-  // if(request.url !== '/classes/messages') {
-
-  //   response.end('404 - not found');
-  // }
-  // request.url = '/classes/messages'
+  if(request.url !== '/classes/messages') {
+    var headers = defaultCorsHeaders;
+    response.writeHead(404, headers);
+    response.end('404 - not found');
+  }
 
   if(request.method === 'GET') {
+    //headers = {'Content-Type' : 'application/json'};
     var headers = defaultCorsHeaders;
     headers['Content-Type'] = 'application/json';
     response.writeHead(200, headers);
-    response.end(JSON.stringify(messages));
+    var theMessages = JSON.stringify(messages);
+    //console.log(theMessages)
+    response.end(theMessages);
+
   } else if(request.method === 'POST') {
-    var body = '';
+    //var body = '';
+
     var headers = defaultCorsHeaders;
+    headers['Content-Type'] = 'application/json';
     response.writeHead(201, headers);
-    request.on('data', function (data) {
-      body += data ;
-      messages.results.push(JSON.parse(data.json));
+
+    var chunk = '';
+    request.on('data', function (d) {
+      chunk += d;
     });
-    response.end(JSON.stringify(messages));
+
+    request.on('end', function () {
+      console.log(chunk);
+      messages.results.push(chunk);
+      //console.log("Body: " + messages);
+      response.end(JSON.stringify(messages));
+    });
+
+    //request.end('post received');
+
+    // response.on('end', function(){
+    //   var statusCode = 201;
+    //   var headers = defaultCorsHeaders;
+    //   headers['Content-Type'] = 'application/json';
+    //   response.writeHead(statusCode, headers);
+    //   response.end('success');
+    // });
+
   } else {
     var headers = defaultCorsHeaders;
     headers['Content-Type'] = 'application/json';
@@ -64,13 +88,37 @@ var requestHandler = function(request, response) {
     response.end("Not found");
   }
 
-    //request.on('end', function(){
-  //     var statusCode = 201;
-  //     var headers = defaultCorsHeaders;
-  //     headers['Content-Type'] = 'application/json';
-  //     response.writeHead(statusCode, headers);
-  //     response.end(true);
-  //   //});
+
+//   var headers = defaultCorsHeaders;
+//   headers['Content-Type'] = 'application/json';
+//   statusCode = 200;
+//     if (request.method === responseMethod[request.method]) {
+//       responseMethod[request.method](request, response, headers);
+//     }
+
+// var responseMethod = {
+//   GET: function(request, response, headers) {
+//     response.writeHead(200, headers);
+//     var theMessages = JSON.stringify(messages);
+//     response.end(theMessages);
+//   },
+//   POST: function(request, response, headers) {
+//     var body = '';
+//     response.writeHead(201, headers);
+//     response.on('data', function(data){
+//       body += data;
+//       messages.results.push(JSON.parse(body))
+//     });
+//     response.end();
+//   }
+// }
+
+// {GET: function()}
+
+// if (request.method === GEt) {
+//   obj.GET()
+// }
+
   // }
 
   // The outgoing status.
